@@ -20,9 +20,10 @@ global mp3_tags_dict
 mp3_tags_dict={'titolo':tkinter.StringVar(),'artista':tkinter.StringVar(),'album':tkinter.StringVar()}
 
 def open_file():
+	#funzione che si occupa di aprire un file musicale
 	try:
 		global filename
-		filename=tkinter.filedialog.askopenfilename(filetypes=[('MP3','.mp3'),('OGG','.ogg')])
+		filename=tkinter.filedialog.askopenfilename(filetypes=[('MP3','.mp3'),('OGG','.ogg')],initialdir='/home/')
 		mixer.music.load(filename)
 		loaded=True
 		mp3_tags=taglib.File(filename)
@@ -60,7 +61,7 @@ def volume(command): #da usare solo passando comando come parametro
 		volume_value.set(volume_value_string)
 	mixer.music.set_volume(float(volume_value.get()))
 
-def get_tags(tag):
+def get_tags(tag): #funzione che restituisce i tag del file mp3
 	if tag=='titolo':
 		if mp3_tags_dict:
 			return mp3_tags_dict['titolo']
@@ -78,39 +79,43 @@ def get_tags(tag):
 			return '-'
 
 def gui(): #creazione dell'interfaccia grafica
-	#operazioni in idle
-	#idle=tkinter.Button(command=root.update())
-	#idle.grid()
-	open_button=tkinter.Button(text='Apri',command=lambda:open_file())
-	open_button.grid(row=0,column=0)
-	play_button=tkinter.Button(text='Play',command=lambda:play(filename))
-	play_button.grid(row=1,column=0)
+	menu_bar=tkinter.Menu(root)
+	file_menu=tkinter.Menu(menu_bar,tearoff=0)
+	file_menu.add_command(label="Apri",command=lambda:open_file())
+	file_menu.add_separator()
+	file_menu.add_command(label="Esci",command=lambda:exit())
+	menu_bar.add_cascade(label="File", menu=file_menu)
+	root.config(menu=menu_bar)
+	#play_image = tkinter.PhotoImage(file="./play-button.gif") #da provare
+	#play_button=tkinter.Button(root,image=play_image,command=lambda:play(filename)) #da provare, ora non funziona
+	play_button=tkinter.Button(root,text='Play',command=lambda:play(filename))
+	play_button.grid(row=2,column=0)
 	pause_button=tkinter.Button(text='Pausa',command=lambda:pause())
-	pause_button.grid(row=1,column=1)
+	pause_button.grid(row=2,column=1)
 	stop_button=tkinter.Button(text='Stop',command=lambda:stop())
-	stop_button.grid(row=1,column=2)
+	stop_button.grid(row=2,column=2)
 	volume_label=tkinter.Label(text='  Volume: ')
-	volume_label.grid(row=1,column=3)
+	volume_label.grid(row=2,column=3)
 	volume_increase=tkinter.Button(text='+',width=1,command=lambda:volume('+'))
-	volume_increase.grid(row=1,column=4)
+	volume_increase.grid(row=2,column=4)
 	volume_decrease=tkinter.Button(text='-',width=1,command=lambda:volume('-'))
-	volume_decrease.grid(row=1,column=5)
+	volume_decrease.grid(row=2,column=5)
 	volume_value_label=tkinter.Label(textvariable=volume_value)
-	volume_value_label.grid(row=1,column=6)
+	volume_value_label.grid(row=2,column=6)
 
 	#visualizzazione info media
 	title=tkinter.Label(text='Titolo:')
-	title.grid(row=2,column=0)
+	title.grid(row=3,column=0)
 	song_title_label=tkinter.Label(textvariable=get_tags('titolo'))
-	song_title_label.grid(row=2,column=1)
+	song_title_label.grid(row=3,column=1)
 	artist=tkinter.Label(text='Artista:')
-	artist.grid(row=3,column=0)
+	artist.grid(row=4,column=0)
 	song_artist_label=tkinter.Label(textvariable=get_tags('artista'))
-	song_artist_label.grid(row=3,column=1)
+	song_artist_label.grid(row=4,column=1)
 	album=tkinter.Label(text='Album:')
-	album.grid(row=4,column=0)
+	album.grid(row=5,column=0)
 	song_album_label=tkinter.Label(textvariable=get_tags('album'))
-	song_album_label.grid(row=4,column=1)
+	song_album_label.grid(row=5,column=1)
 
 
 #open_file()
